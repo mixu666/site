@@ -1,0 +1,134 @@
+<?php
+echo $this->doctype();
+?>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
+    <title><?php echo $this->translate($this->title); ?></title>
+    <?php
+    $this->headLink()->appendStylesheet($this->baseUrl('/css/map.css'));
+    $this->headLink()->appendStylesheet($this->baseUrl('/css/custom-theme/jquery-ui-1.8.2.custom.css'));
+    $this->headLink()->headLink(array(  'rel'   => 'shortcut icon',
+                                        'href'  => $this->baseUrl('/images/favicon.png'),
+                                        'type'  => 'image/x-icon'),
+                                        'PREPEND'
+                               );
+
+    $this->headScript()->prependFile($this->baseUrl('/js/jquery-ui-1.7.2.custom.min.js'));
+    $this->headScript()->prependFile($this->baseUrl('/js/jquery.js'));
+    
+    echo $this->headLink();
+    echo $this->headMeta();
+    echo $this->headScript();
+    ?>
+</head>
+<body>
+    <div id="map_top">
+        <div id="map_top_navi">
+            <span class="deepblue">
+                <a href="<?php echo $this->url(array(
+                    'language' => $this->language), 'lang_default', true);
+                ?>/">Home</a>
+            </span>
+            |
+            <span class="red">
+                <a href="<?php echo $this->url(array(
+                    'type' => 'problem',
+                    'language' => $this->language), 'content_list', true);
+                ?>/">Challenges</a>
+            </span>
+            |
+            <span class="green">
+                <a href="<?php echo $this->url(array(
+                    'type' => 'idea',
+                    'language' => $this->language), 'content_list', true);
+                ?>/">Ideas</a>
+            </span>
+            |
+            <span class="orange">
+                <a href="<?php echo $this->url(array(
+                    'type' => 'finfo',
+                    'language' => $this->language), 'content_list', true);
+                ?>/">Visions</a>
+            </span>
+            |
+            <span class="blue">
+                <a href="<?php echo $this->url(array(
+                    'controller' => 'group',
+                    'action' => 'index',
+                    'language' => $this->language), 'lang_default', true);
+                ?>/">Groups</a>
+            </span>
+            |
+            <span class="blue">
+                <a href="<?php echo $this->url(array(
+                    'controller' => 'campaign',
+                    'action' => 'index',
+                    'language' => $this->language), 'lang_default', true);
+                ?>/">Campaigns</a>
+            </span>
+            |
+            <span class="blue">
+                <a href="<?php echo $this->url(array(
+                    'controller' => 'account',
+                    'action' => 'userlist',
+                    'language' => $this->language), 'lang_default', true);
+                ?>/">Users</a>
+            </span>
+            |
+            <span class="deepblue">
+                <a href="/blog/">Blog</a>
+            </span>
+            |
+            <span class="black">
+                <a href="<?php echo $this->url(array(
+                    'controller' => 'map',
+                    'action' => 'index',
+                    'language' => $this->language), 'lang_default', true);
+                ?>/new">Map</a>
+            </span>
+        </div>
+        <div id="map_top_login">
+            Login | Sign up
+        </div>
+    </div>
+
+    <div id="map_controls">
+        <img id="logo" src="<?php echo $this->baseUrl('/images/massidea_logo_black.png'); ?>" alt="[Massidea.org]" />
+
+        <div id="map_zoom">
+            Zoom: <input type="text" id="search_distance" style="width: 50px; height: 20px;" /> km
+        </div>
+
+        <div id="map_filters">
+            from <input type="text" id="search_location" style="width: 400px; height: 20px;" />
+            <input type="submit" value="Search" onclick="javascript:search();" />
+            <img src="<?php echo  $this->baseUrl('/images/ajax-loader-black.gif'); ?>" style="display: none;" alt="..." id="search_loader" />
+            <br />
+
+            <div style="padding-top: 10px;">
+            Show:
+            <input type="checkbox" checked="checked" id="search_users" class="mapfilter" />users
+            <input type="checkbox" checked="checked" id="search_contents" class="mapfilter" />contents
+            <input type="checkbox" checked="checked" id="search_groups" class="mapfilter" />groups
+            <input type="checkbox" checked="checked" id="search_campaigns" class="mapfilter" />campaigns
+            </div>
+        </div>
+    </div>
+
+    <div id="search_results">
+        <ul>
+            <li><a href="#search_results_content">Content</a></li>
+            <li><a href="#search_results_users">Users</a></li>
+            <li><a href="#search_results_groups">Groups</a></li>
+            <li><a href="#search_results_campaigns">Campaigns</a></li>
+        </ul>
+        <div id="search_results_content"></div>
+        <div id="search_results_users"></div>
+        <div id="search_results_groups"></div>
+        <div id="search_results_campaigns"></div>
+    </div>
+
+    <div id="map"><?php echo $this->layout()->content; ?></div>
+</body>
+</html>

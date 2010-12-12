@@ -64,7 +64,6 @@ class Oibs_Validators_GroupExists extends Zend_Validate_Abstract
 
         if (is_array($this->_options) && array_key_exists('oldname', $this->_options)) {
             // Edit mode - name can be the same as 'oldname'.
-            //die('edit mode, oldname = ' . $options['oldname']);
             if ($value == $this->_options['oldname']) {
                 // Name hasn't changed, so it's still valid.
                 return true;

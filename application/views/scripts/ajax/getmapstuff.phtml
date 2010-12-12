@@ -1,0 +1,9 @@
+<?php
+$result['users'] = $this->allUserCoords;
+$result['contents'] = $this->contentCoords;
+$result['groups'] = $this->groupCoords;
+$result['campaigns'] = $this->campaignCoords;
+
+$result['locations'] = $this->locations;
+echo json_encode($result);
+?>

@@ -92,6 +92,27 @@ class CampaignController extends Oibs_Controller_CustomController
                     
                     $newCampaign = $campaignModel->createCampaign(
                         $name, $ingress, $desc, $start, $end, $grpId);
+                    if ($newCampaign) {
+                        $newCmpId = $newCampaign['id_cmp'];
+                    }
+
+                    // Geocode location.
+                    $address = urlencode($post['campaignlocation']);
+                    $georesult = file_get_contents("http://maps.google.com/maps/api/geocode/json?sensor=false&address=$address");
+                    if ($georesult) {
+                        $geo = json_decode($georesult);
+                        if ($geo->status == 'OK') {
+                            $addr = $geo->results[0]->formatted_address;
+                            $lat  = $geo->results[0]->geometry->location->lat;
+                            $long = $geo->results[0]->geometry->location->lng;
+                        }
+                    }
+
+                    // Set coordinates.
+                    if (isset($lat) && isset($long) && isset($addr) && isset($newCmpId)) {
+                        $coordModel = new Default_Model_Coordinates();
+                        $coordModel->setCoordinates('campaign', $newCmpId, $lat, $long, $addr);
+                    }
 
                     // Set weblinks
                     $campaignWeblinksModel = new Default_Model_CampaignWeblinks();
@@ -337,6 +358,11 @@ class CampaignController extends Oibs_Controller_CustomController
             if ($cmp['end_time_cmp'] != '0000-00-00')
                 $formData['campaign_end'] = $cmp['end_time_cmp'];
 
+            // Get campaign location.
+            $coordModel = new Default_Model_Coordinates();
+            $coords = $coordModel->getCoordinates('campaign', $cmpId);
+            $formData['campaignlocation'] = $coords[0]['address_crd'];
+
             // Get campaign weblinks
             $campaignWeblinksModel = new Default_Model_CampaignWeblinks();
             $campaignWeblinks = $campaignWeblinksModel->getCampaignWeblinks($cmpId);
@@ -375,6 +401,28 @@ class CampaignController extends Oibs_Controller_CustomController
                             'keepExisting',
                             $post['campaign_end']
                         );
+                    }
+
+                    // See if location has changed, and set new if it has.
+                    $coordModel = new Default_Model_Coordinates();
+                    $coords = $coordModel->getCoordinates('campaign', $cmpId);
+                    if ($coords[0]['address_crd'] != $post['campaignlocation']) {
+                        // Geocode new location.
+                        $address = urlencode($post['campaignlocation']);
+                        $georesult = file_get_contents("http://maps.google.com/maps/api/geocode/json?sensor=false&address=$address");
+                        if ($georesult) {
+                            $geo = json_decode($georesult);
+                            if ($geo->status == 'OK') {
+                                $addr = $geo->results[0]->formatted_address;
+                                $lat  = $geo->results[0]->geometry->location->lat;
+                                $long = $geo->results[0]->geometry->location->lng;
+                            }
+                        }
+
+                        // Set coordinates.
+                        if (isset($lat) && isset($long) && isset($addr)) {
+                            $coordModel->setCoordinates('campaign', $cmpId, $lat, $long, $addr);
+                        }
                     }
 
                     // Set weblinks

@@ -144,7 +144,7 @@ echo $this->doctype();
                                                                'lang_default', true); ?>">
                                     <?php echo $this->translate('index-logout'); ?>
                                 </a>
-                        <?php else: // if not authenticated
+                        <?php else:
                                 $url_sign_up = $this->url(array('controller' => 'account',
                                                         'action' => 'register',
                                                         'language' => $this->language),
@@ -365,7 +365,7 @@ echo $this->doctype();
                                     <?php echo $this->translate('index-groups');?>
                             </a>
                         </li>
-						<li id="users" class="blue">
+                        <li id="users" class="blue">
                             <a href="<?php echo $this->url(array('controller' => 'account',
                                                  'action' => 'userlist',
                                                  'language' => $this->language),
@@ -384,6 +384,12 @@ echo $this->doctype();
 			<li class="deepblue">
 				<a href="/blog/">Blog</a>
 			</li>
+                        <li>
+                            <a href="<?php echo $this->url(array('controller' => 'map',
+                                                 'action' => 'new',
+                                                 'language' => $this->language),
+                                            'lang_default', true); ?>">Map</a>
+                        </li>
                     </ul>
                 </div>
                 <div class="right">
@@ -457,16 +463,33 @@ echo $this->doctype();
                     <ul>
                         <li>&copy; 2009 <a href="http://massidea.org">Massidea.org</a></li>
                         <li>
-                            <a href="http://www.massidea.org/blog/?page_id=40">
+                            <a href="<?php echo $this->url(array('controller' => 'help',
+                                                                'action'      => 'about',
+                                                                'language'    => $this->language),
+                                                                'lang_default', true); ?>">
                             <?php echo $this->translate('index-about'); ?></a>
                         </li>
                         <li>
-                            <a href="http://www.massidea.org/blog/?page_id=71">
+                            <a href="<?php echo $this->url(array('controller' => 'help',
+                                                         'action' => 'contact',
+                                                         'language' => $this->language),
+                                                   'lang_default', true); ?>">
                             <?php echo $this->translate('index-contact'); ?></a>
                         </li>
                         <li>
-                            <a href="http://www.massidea.org/blog/?page_id=74">
+                            <a href="http://www.oibs.fi/wiki">
                             <?php echo $this->translate('index-development'); ?></a>
+                        </li>
+                        <li>
+                             <a href="<?php echo $this->url(array('controller' => 'help',
+                                                         'action' => 'index',
+                                                         'language' => $this->language),
+                                                   'lang_default', true); ?>">
+                            <?php echo $this->translate('index-help'); ?></a>
+                        </li>
+                        <li>
+                           <a href="#">
+                            <?php echo $this->translate('index-jobs'); ?></a>
                         </li>
                         <li>
                             <a href="#" onclick="popup('popup_terms_'); return false;">

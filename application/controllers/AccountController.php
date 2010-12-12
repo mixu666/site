@@ -748,9 +748,27 @@ class AccountController extends Oibs_Controller_CustomController
                     
                     $logger['register']->notice($message);
                 }
-                
+
                 // Fetch user id
                 $uid = $user->getIdByUsername($formData['username']);
+
+                // Geocode hometown.
+                $address = urlencode($formData['city']);
+                $georesult = file_get_contents("http://maps.google.com/maps/api/geocode/json?sensor=false&address=$address");
+                if ($georesult) {
+                    $geo = json_decode($georesult);
+                    if ($geo->status == 'OK') {
+                        $addr = $geo->results[0]->formatted_address;
+                        $lat  = $geo->results[0]->geometry->location->lat;
+                        $long = $geo->results[0]->geometry->location->lng;
+                    }
+                }
+
+                // Set coordinates.
+                if (isset($lat) && isset($long) && isset($addr)) {
+                    $coordModel = new Default_Model_Coordinates();
+                    $coordModel->setCoordinates('user', $uid, $lat, $long, $addr);
+                }
                 
                 $userProfiles = new Default_Model_UserProfiles();
                 $userProfiles->setUserEmployment($uid, $formData,0);
@@ -1180,6 +1198,35 @@ class AccountController extends Oibs_Controller_CustomController
                     $notificationsModel->setUserNotifications($id, $formdata['notifications']);
 
                     $userProfile = new Default_Model_UserProfiles();
+
+                    // Get old hometown & address. If they've changed,
+                    // geocode & save the new location.
+                    $oldcity = $userProfile->getUserCity($id)->toArray();
+                    $oldcity = $oldcity['profile_value_usp'];
+                    $oldaddr = $userProfile->getUserProfileValue($id, 'address')->toArray();
+                    $oldaddr = $oldaddr['profile_value_usp'];
+
+                    if ($oldcity != $formdata['city'] || $oldaddr != $formdata['address']) {
+                        // Geocode address / hometown.
+                        if ($formdata['address']) $address = $formdata['address'] . ', '; else $address = '';
+                        $address = urlencode($address . $formdata['city']);
+                        $georesult = file_get_contents("http://maps.google.com/maps/api/geocode/json?sensor=false&address=$address");
+                        if ($georesult) {
+                            $geo = json_decode($georesult);
+                            if ($geo->status == 'OK') {
+                                $addr = $geo->results[0]->formatted_address;
+                                $lat  = $geo->results[0]->geometry->location->lat;
+                                $long = $geo->results[0]->geometry->location->lng;
+                            }
+                        }
+
+                        // Set coordinates.
+                        if (isset($lat) && isset($long) && isset($addr)) {
+                            $coordModel = new Default_Model_Coordinates();
+                            $coordModel->setCoordinates('user', $id, $lat, $long, $addr);
+                        }
+                    }
+
                     $userProfile->setProfileData($id, $formdata);
 
                     // Set weblinks

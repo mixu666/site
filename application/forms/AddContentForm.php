@@ -333,6 +333,24 @@ class Default_Form_AddContentForm extends Zend_Form
                 ->setLabel($translate->_("content-add-references"))
                 ->setDescription($translate->_("content-add-references-help-text"))
 				->setDecorators(array('FormOptionalElementDecorator'));
+
+        // Location
+        $location = new Zend_Form_Element_Text('content_location');
+        $location
+            ->setRequired(false)
+            ->setLabel('Location')
+            ->setFilters(array('StringTrim'))
+            ->setValidators(array(
+                array('StringLength',
+                    false,
+                    array(
+                        1,
+                        140,
+                        'messages' =>
+                            array('stringLengthTooLong' => 'Location too long.'))),
+            ))
+            ->setDecorators(array('FormOptionalElementDecorator'));
+
         
 		/*
         
@@ -407,6 +425,7 @@ class Default_Form_AddContentForm extends Zend_Form
 
 	// Add generic elements to form
         $this->addElements(array(
+            $location,
             $language,
 	    	$header,
             $keywords,

@@ -477,7 +477,23 @@ class ContentController extends Oibs_Controller_CustomController
                                                   		'lang_default', true);
 
 					if($add_successful) {
-						
+            // Geocode location.
+            $address = urlencode($data['content_location']);
+            $georesult = file_get_contents("http://maps.google.com/maps/api/geocode/json?sensor=false&address=$address");
+            if ($georesult) {
+                $geo = json_decode($georesult);
+                if ($geo->status == 'OK') {
+                    $addr = $geo->results[0]->formatted_address;
+                    $lat  = $geo->results[0]->geometry->location->lat;
+                    $long = $geo->results[0]->geometry->location->lng;
+                }
+            }
+            // Set coordinates.
+            if (isset($lat) && isset($long) && isset($addr)) {
+                $coordModel = new Default_Model_Coordinates();
+                $coordModel->setCoordinates('content', $add, $lat, $long, $addr);
+            }
+                        
 						// Get cache from registry
 				        $cache = Zend_Registry::get('cache');
 				        
@@ -1279,6 +1295,11 @@ class ContentController extends Oibs_Controller_CustomController
 					$filenames = $filesModel->getFilenames($contentId, "content");
 					$formData['filenames'] = $filenames;
 
+                    // Get campaign location.
+                    $coordModel = new Default_Model_Coordinates();
+                    $coords = $coordModel->getCoordinates('content', $contentId);
+                    $formData['content_location'] = $coords[0]['address_crd'];
+
 					// Form for content adding
 					$form = new Default_Form_EditContentForm(null, $formData, $contentId, $contentType, $this->view->language);
 					$form->populate($formData);
@@ -1387,6 +1408,28 @@ class ContentController extends Oibs_Controller_CustomController
 								//$favourite = new Default_Model_UserHasFavourites();
 								//$favouriteEdited = $favourite->setFavouriteModifiedTrue($edit);
 								if($oldData['published_cnt'] == 1 || (isset($data['content_publish']) && $data['content_publish'] == 1)) {
+                                    // See if location has changed, and set new if it has.
+                                    $coordModel = new Default_Model_Coordinates();
+                                    $coords = $coordModel->getCoordinates('content', $contentId);
+                                    if ($coords[0]['address_crd'] != $data['content_location']) {
+                                        // Geocode new location.
+                                        $address = urlencode($data['content_location']);
+                                        $georesult = file_get_contents("http://maps.google.com/maps/api/geocode/json?sensor=false&address=$address");
+                                        if ($georesult) {
+                                            $geo = json_decode($georesult);
+                                            if ($geo->status == 'OK') {
+                                                $addr = $geo->results[0]->formatted_address;
+                                                $lat  = $geo->results[0]->geometry->location->lat;
+                                                $long = $geo->results[0]->geometry->location->lng;
+                                            }
+                                        }
+
+                                        // Set coordinates.
+                                        if (isset($lat) && isset($long) && isset($addr)) {
+                                            $coordModel->setCoordinates('content', $contentId, $lat, $long, $addr);
+                                        }
+                                    }
+                                    
 									$url = $this->_urlHelper->url(array('content_id' => $edit,
                                                                         'language' => $this->view->language), 
                                                                   'content_shortview', true);
@@ -1414,9 +1457,6 @@ class ContentController extends Oibs_Controller_CustomController
 							} else {
 								$this->flash($message_error, $url);
 							}
-						} else {
-							// What is this?
-							//Zend_Debug::dump($form); die;
 						}
 
 						/*
@@ -1455,6 +1495,7 @@ class ContentController extends Oibs_Controller_CustomController
 			$this->flash($message, $url);
 		} // end else
 	}
+    }
 
 	/**
 	 *   removeAction

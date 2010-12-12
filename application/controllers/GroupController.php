@@ -1,6 +1,6 @@
 <?php
 /**
- *  GroupController -> Viewing content from the database
+ *  GroupController
  *
  *   Copyright (c) <2010>, Mikko Aatola <mikko@aatola.net>
  *             (c) <2010>, Sami Kiviharju <stoney78@kapsi.fi>
@@ -330,7 +330,7 @@
                 $this->_redirector->gotoUrl($target);
             }
 
-            // Get existing group info.
+            // Create the form in edit mode.
             $grpModel = new Default_Model_Groups();
             $grpData = $grpModel->getGroupData($grpId);
 
@@ -346,12 +346,17 @@
             	'fileNames' => $filenames,
             ));
 
-            // Populate the form.
+            // Get existing group info.
             $formData = array();
             $formData['groupname'] = $grpData['group_name_grp'];
             $formData['grouptype'] = $grpData['id_type_grp'];
             $formData['groupdesc'] = $grpData['description_grp'];
             $formData['groupbody'] = $grpData['body_grp'];
+
+            // Get group location.
+            $coordModel = new Default_Model_Coordinates();
+            $coords = $coordModel->getCoordinates('group', $grpId);
+            $formData['grouplocation'] = $coords[0]['address_crd'];
 
             // Get group weblinks
             $groupWeblinksModel = new Default_Model_GroupWeblinks();
@@ -374,12 +379,34 @@
                 if ($form->isValid($post)) {
                     // Change existing group info.
                     $groupModel = new Default_Model_Groups();
-                    $newGroupId = $groupModel->editGroup(
+                    $groupModel->editGroup(
                         $grpId,
                         $this->replaceWhitespace($post['groupname']),
                         $post['grouptype'],
                         $post['groupdesc'],
                         $post['groupbody']);
+
+                    // See if location has changed, and set new if it has.
+                    $coordModel = new Default_Model_Coordinates();
+                    $coords = $coordModel->getCoordinates('group', $grpId);
+                    if ($coords[0]['address_crd'] != $post['grouplocation']) {
+                        // Geocode new location.
+                        $address = urlencode($post['grouplocation']);
+                        $georesult = file_get_contents("http://maps.google.com/maps/api/geocode/json?sensor=false&address=$address");
+                        if ($georesult) {
+                            $geo = json_decode($georesult);
+                            if ($geo->status == 'OK') {
+                                $addr = $geo->results[0]->formatted_address;
+                                $lat  = $geo->results[0]->geometry->location->lat;
+                                $long = $geo->results[0]->geometry->location->lng;
+                            }
+                        }
+
+                        // Set coordinates.
+                        if (isset($lat) && isset($long) && isset($addr)) {
+                            $coordModel->setCoordinates('group', $grpId, $lat, $long, $addr);
+                        }
+                    }
 
                     // Set weblinks
                     if (isset($post['weblinks_name_site1']) && isset($post['weblinks_url_site1'])) {
@@ -448,6 +475,24 @@
                         $post['grouptype'],
                         $post['groupdesc'],
                         $post['groupbody']);
+
+                    // Geocode location.
+                    $address = urlencode($post['grouplocation']);
+                    $georesult = file_get_contents("http://maps.google.com/maps/api/geocode/json?sensor=false&address=$address");
+                    if ($georesult) {
+                        $geo = json_decode($georesult);
+                        if ($geo->status == 'OK') {
+                            $addr = $geo->results[0]->formatted_address;
+                            $lat  = $geo->results[0]->geometry->location->lat;
+                            $long = $geo->results[0]->geometry->location->lng;
+                        }
+                    }
+
+                    // Set coordinates.
+                    if (isset($lat) && isset($long) && isset($addr)) {
+                        $coordModel = new Default_Model_Coordinates();
+                        $coordModel->setCoordinates('group', $newGroupId, $lat, $long, $addr);
+                    }
 
                     // Set weblinks
                     $groupWeblinksModel = new Default_Model_GroupWeblinks();

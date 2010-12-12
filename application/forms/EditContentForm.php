@@ -327,6 +327,23 @@ class Default_Form_EditContentForm extends Zend_Form
                 ->setDescription($translate->_("content-add-references-help-text"))
 				->setDecorators(array('FormOptionalElementDecorator'));
         
+        // Location
+        $location = new Zend_Form_Element_Text('content_location');
+        $location
+            ->setRequired(false)
+            ->setLabel('Location')
+            ->setFilters(array('StringTrim'))
+            ->setValidators(array(
+                array('StringLength',
+                    false,
+                    array(
+                        1,
+                        140,
+                        'messages' =>
+                            array('stringLengthTooLong' => 'Location too long.'))),
+            ))
+            ->setDecorators(array('FormOptionalElementDecorator'));
+
         // Language select form element
         $language = new Zend_Form_Element_Select('content_language');
 		$language->addFilter('StringtoLower')
@@ -427,7 +444,7 @@ class Default_Form_EditContentForm extends Zend_Form
         	array_push($elements, $uploadedFilesBoxes);
         }
         
-        array_push($elements, $references, $language, $hidden_content_save, $hidden_content_publish);
+        array_push($elements, $references, $location, $language, $hidden_content_save, $hidden_content_publish);
         
         /*
         if($contentType == "finfo") {

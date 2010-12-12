@@ -165,6 +165,29 @@ class Default_Form_AddCampaignForm extends Zend_Form
             ->setValue($clear)
             ->setDecorators(array('ViewHelper'));
 
+        // Location
+        $location = new Zend_Form_Element_Text('campaignlocation');
+        $location
+            ->setLabel('Location')
+            ->setFilters(array('StringTrim'))
+            ->setValidators(array(
+                array('StringLength',
+                    false,
+                    array(
+                        1,
+                        140,
+                        'messages' =>
+                            array('stringLengthTooLong' => 'Location too long.'))),
+            ))
+            ->setDescription(
+                '<div id="progressbar_campaignlocation" class="limit ok"></div>')
+            ->setDecorators(array('FieldDecorator'));
+
+        $location_clear = new Oibs_Form_Element_Note('campaignlocation_clear');
+        $location_clear
+            ->setValue($clear)
+            ->setDecorators(array('ViewHelper'));
+
         $weblinks_websites = new Oibs_Form_Element_Note('weblinks_websites');
         $weblinks_websites->setValue('<div class="input-column-website1"><label><strong>Links to websites:</strong></label></div>');
         $weblinks_name = new Oibs_Form_Element_Note('weblinks_name');
@@ -336,6 +359,8 @@ class Default_Form_AddCampaignForm extends Zend_Form
                 $campaignstart_clear,
                 $campaignend,
                 $campaignend_clear,
+                $location,
+                $location_clear,
                 $weblinks_websites,
                 $weblinks_name,
                 $weblinks_url,
@@ -361,6 +386,8 @@ class Default_Form_AddCampaignForm extends Zend_Form
                 $campaigningress_clear,
                 $campaigndesc,
                 $campaigndesc_clear,
+                $location,
+                $location_clear,
                 $weblinks_websites,
                 $weblinks_name,
                 $weblinks_url,

@@ -135,12 +135,38 @@ class Default_Form_AddGroupForm extends Zend_Form
                         'messages' =>
                             array('stringLengthTooLong' => 'Body text too long.')))
             ))
+            ->setDescription(
+                '<div id="progressbar_groupbody" class="limit ok"></div>')
             ->setDecorators(array('FieldDecorator'));
 
         $groupbody_clear = new Oibs_Form_Element_Note('groupbody_clear');
         $groupbody_clear
             ->setValue($clear)
             ->setDecorators(array('ViewHelper'));
+
+        // Location
+        $location = new Zend_Form_Element_Text('grouplocation');
+        $location
+            ->setLabel('Location')
+            ->setFilters(array('StringTrim'))
+            ->setValidators(array(
+                array('StringLength',
+                    false,
+                    array(
+                        1,
+                        140,
+                        'messages' =>
+                            array('stringLengthTooLong' => 'Location too long.'))),
+            ))
+            ->setDescription(
+                '<div id="progressbar_grouplocation" class="limit ok"></div>')
+            ->setDecorators(array('FieldDecorator'));
+
+        $location_clear = new Oibs_Form_Element_Note('grouplocation_clear');
+        $location_clear
+            ->setValue($clear)
+            ->setDecorators(array('ViewHelper'));
+
 
         $weblinks_websites = new Oibs_Form_Element_Note('weblinks_websites');
         $weblinks_websites->setValue('<div class="input-column-website1"><label><strong>Links to websites:</strong></label></div>');
@@ -304,6 +330,8 @@ class Default_Form_AddGroupForm extends Zend_Form
             $groupdesc_clear,
             $groupbody,
             $groupbody_clear,
+            $location,
+            $location_clear,
             $weblinks_websites,
             $weblinks_name,
             $weblinks_url,

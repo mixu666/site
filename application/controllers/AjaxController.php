@@ -56,7 +56,173 @@ class AjaxController extends Oibs_Controller_CustomController
  	{
 		echo "Move along people, there's nothing to see here! <br />";
  	}
-	
+
+    function getmapstuffAction()
+    {
+        $auth = Zend_Auth::getInstance();
+        if ($auth->hasIdentity()) {
+            $user = $auth->getIdentity();
+            $uid = $user->user_id;
+        }
+        
+        $northLimit = $this->params['n'];
+        $eastLimit = $this->params['e'];
+        $southLimit = $this->params['s'];
+        $westLimit = $this->params['w'];
+
+        // Get users' coordinates.
+        if (isset($this->params['users'])) {
+            $coordModel = new Default_Model_Coordinates();
+            $this->view->allUserCoords = $coordModel->getAllUserCoordinates(
+                $n, $s, $e, $w);
+            if ($this->view->allUserCoords) {
+                foreach ($this->view->allUserCoords as $key => $crd) {
+                    $this->view->allUserCoords[$key]['url'] = $this->_urlHelper->url(
+                        array(
+                            'controller' => 'account',
+                            'action' => 'view',
+                            'user' => $this->view->allUserCoords[$key]['loginname'],
+                            'language' => $this->view->language),
+                        'lang_default', true
+                    );
+                    $this->view->allUserCoords[$key]['imgurl'] = $this->_urlHelper->url(
+                        array(
+                            'controller' => 'account',
+                            'action' => 'profilethumb',
+                            'id' => $this->view->allUserCoords[$key]['id_owner_crd'],
+                            'thumb' => 'true',
+                            'language' => $this->view->language),
+                        'lang_default', true
+                    );
+                    if (isset($uid) && $crd['id_owner_crd'] == $uid) {
+                        $this->view->allUserCoords[$key]['current_user'] = true;
+                    }
+                }
+            }
+        }
+
+        // Get contents' coordinates.
+        if (isset($this->params['contents'])) {
+            $coordModel = new Default_Model_Coordinates();
+            $this->view->contentCoords = $coordModel->getAllContentCoordinates(
+                $northLimit, $southLimit, $eastLimit, $westLimit);
+
+            // Insert content page urls to the array.
+            if ($this->view->contentCoords) {
+                foreach ($this->view->contentCoords as $key => $val) {
+                    $this->view->contentCoords[$key]['url'] = $this->_urlHelper->url(
+                        array(
+                            'content_id' => $this->view->contentCoords[$key]['id_owner_crd'],
+                            'language' => $this->view->language),
+                         'content_shortview', true
+                    );
+                }
+            }
+        }
+
+        // Get groups' coordinates.
+        if (isset($this->params['groups'])) {
+            $coordModel = new Default_Model_Coordinates();
+            $this->view->groupCoords = $coordModel->getAllGroupCoordinates(
+                $northLimit, $southLimit, $eastLimit, $westLimit);
+
+            // Insert group page urls to the array.
+            if ($this->view->groupCoords) {
+                foreach ($this->view->groupCoords as $key => $val) {
+                    $this->view->groupCoords[$key]['url'] = $this->_urlHelper->url(
+                        array(
+                            'groupid' => $this->view->groupCoords[$key]['id_owner_crd'],
+                            'language' => $this->view->language),
+                         'group_shortview', true
+                    );
+                }
+            }
+        }
+
+        // Get campaigns' coordinates.
+        if (isset($this->params['campaigns'])) {
+            $coordModel = new Default_Model_Coordinates();
+            $this->view->campaignCoords = $coordModel->getAllCampaignCoordinates(
+                $northLimit, $southLimit, $eastLimit, $westLimit);
+
+            // Insert campaign page urls to the array.
+            if ($this->view->campaignCoords) {
+                foreach ($this->view->campaignCoords as $key => $val) {
+                    $this->view->campaignCoords[$key]['url'] = $this->_urlHelper->url(
+                        array(
+                            'cmpid' => $this->view->campaignCoords[$key]['id_owner_crd'],
+                            'language' => $this->view->language),
+                         'campaign_view', true
+                    );
+                }
+            }
+        }
+
+        $locations = array();
+        // Users
+        if ($this->view->allUserCoords) {
+            foreach ($this->view->allUserCoords as $key => $crd) {
+                $s = $crd['latitude_crd'] . ',' . $crd['longitude_crd'];
+                $crd['type'] = 'user';
+                if (isset($locations[$s])) {
+                    // Coordinates exist. Add new user.
+                    $locations[$s][] = $crd;
+                } else {
+                    // Add location to array and add the user to the list.
+                    $locations[$s] = array();
+                    $locations[$s][] = $crd;
+                }
+            }
+        }
+        // Contents
+        if ($this->view->contentCoords) {
+            foreach ($this->view->contentCoords as $key => $crd) {
+                $s = $crd['latitude_crd'] . ',' . $crd['longitude_crd'];
+                $crd['type'] = 'content';
+                if (isset($locations[$s])) {
+                    // Coordinates exist. Add new content.
+                    $locations[$s][] = $crd;
+                } else {
+                    // Add location to array and add the content to the list.
+                    $locations[$s] = array();
+                    $locations[$s][] = $crd;
+                }
+            }
+        }
+        // Groups
+        if ($this->view->groupCoords) {
+            foreach ($this->view->groupCoords as $key => $crd) {
+                $s = $crd['latitude_crd'] . ',' . $crd['longitude_crd'];
+                $crd['type'] = 'group';
+                if (isset($locations[$s])) {
+                    // Coordinates exist. Add new group.
+                    $locations[$s][] = $crd;
+                } else {
+                    // Add location to array and add the group to the list.
+                    $locations[$s] = array();
+                    $locations[$s][] = $crd;
+                }
+            }
+        }
+        // Campaigns
+        if ($this->view->campaignCoords) {
+            foreach ($this->view->campaignCoords as $key => $crd) {
+                $s = $crd['latitude_crd'] . ',' . $crd['longitude_crd'];
+                $crd['type'] = 'campaign';
+                if (isset($locations[$s])) {
+                    // Coordinates exist. Add new campaign.
+                    $locations[$s][] = $crd;
+                } else {
+                    // Add location to array and add the campaign to the list.
+                    $locations[$s] = array();
+                    $locations[$s][] = $crd;
+                }
+            }
+        }
+
+        $this->view->locations = $locations;
+    }
+
     function getrecentcampaignsAction()
     {
         $offset = isset($this->params['offset']) ? $this->params['offset'] : 0;
@@ -65,6 +231,7 @@ class AjaxController extends Oibs_Controller_CustomController
         $grpmodel = new Default_Model_Groups();
         $campaignModel = new Default_Model_Campaigns();
 
+        // Get group name for each campaign.
         // If you find (time to think of) a better way to do this, be my guest.
         if ($status === 'forthcoming') {
             $recentcampaigns = $campaignModel->getRecentForthcomingFromOffset($offset, 10);

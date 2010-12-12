@@ -220,8 +220,7 @@ class Default_Model_UserProfiles extends Zend_Db_Table_Abstract
             return false;
         }
     }
-    
-    
+
     /**
     * Gets all public data as an array, used in public profile page
     *
@@ -941,7 +940,7 @@ class Default_Model_UserProfiles extends Zend_Db_Table_Abstract
 		}	
 		return "None";
 	}
-	
+
 	//Get user's surname
 	public function getUserSurname($id=-1)
 	{

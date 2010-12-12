@@ -413,6 +413,31 @@ class Default_Model_Campaigns extends Zend_Db_Table_Abstract
 
         return $this->fetchAll($select)->toArray();
     }
+
+    /**
+     * getNames
+     *
+     * Returns an array of all campaign names in an associative array
+     * with campaign id as key.
+     *
+     * @author Mikko Aatola
+     */
+    public function getNames()
+    {
+        $select = $this->select()
+            ->from($this, array('id_cmp', 'name_cmp'));
+        $result = $this->fetchAll($select);
+        if (!$result)
+            return null;
+
+        $result = $result->toArray();
+        $final = array();
+        foreach ($result as $cmp) {
+            $final[$cmp['id_cmp']] = $cmp['name_cmp'];
+        }
+
+        return $final;
+    }
     
     /** 
     *   removeCampaign
@@ -426,6 +451,10 @@ class Default_Model_Campaigns extends Zend_Db_Table_Abstract
         // Delete campaign-content links from cmp_has_cnt
         $cmpHasCntModel = new Default_Model_CampaignHasContent();
         $cmpHasCntModel->removeAllContentFromCampaign($id_cmp);
+
+        // Delete campaign's coordinates.
+        $coordModel = new Default_Model_Coordinates();
+        $coordModel->removeCoordinates('campaign', $id_cmp);
 
         // Delete campaign weblinks
         $cmpWeblinksModel = new Default_Model_CampaignWeblinks();

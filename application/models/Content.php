@@ -1449,6 +1449,65 @@ class Default_Model_Content extends Zend_Db_Table_Abstract
 	 */
 
 	/**
+	 * getMostViewed
+	 *
+	 */
+	public function getMostViewed ($limit = 20)
+	{
+		$select = $this->_db->select()->from(array('cnt' => 'contents_cnt'),
+		array('cnt.id_cnt', 'cnt.title_cnt'))
+		->join(array('vws' => 'cnt_views_vws'),
+		'cnt.id_cnt = vws.id_cnt_vws',
+		array('totalViews' => 'COUNT(vws.id_usr_vws)'))
+		->group('cnt.id_cnt')
+		->limit($limit)
+		->order('totalViews');
+		
+		$result = $this->_db->fetchAll($select);
+
+		return $result;
+	}
+
+    /**
+     * getTitles
+     *
+     * Returns an associative array of arrays of content titles and types
+     * with content id as key.
+     *
+     * @author Mikko Aatola
+     */
+    public function getTitles()
+    {
+        $select = $this->_db->select()
+            ->from(array('cnt' => 'contents_cnt'),
+                   array('cnt.id_cnt', 'cnt.title_cnt', 'cnt.id_cty_cnt'))
+            ->join(array('cty' => 'content_types_cty'),
+                   'cnt.id_cty_cnt = cty.id_cty',
+                   'cty.key_cty')
+            ->join(array('chu' => 'cnt_has_usr'),
+                   'chu.id_cnt = cnt.id_cnt',
+                   'chu.id_usr')
+            ->join(array('usr' => 'users_usr'),
+                   'usr.id_usr = chu.id_usr',
+                   'usr.login_name_usr');
+        $result = $this->_db->fetchAll($select);
+        if (!$result)
+            return null;
+
+        $final = array();
+        foreach ($result as $cnt) {
+            $final[$cnt['id_cnt']] = array(
+                'title_cnt' => $cnt['title_cnt'],
+                'key_cty' => $cnt['key_cty'],
+                'login_name_usr' => $cnt['login_name_usr'],
+            );
+        }
+
+        return $final;
+    }
+	
+
+	/**
 	 * getMostViewedType
 	 *
 	 *

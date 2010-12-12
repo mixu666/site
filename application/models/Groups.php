@@ -1,6 +1,6 @@
 <?php
 /**
- *  Groups -> Groups database model for groups table.
+ *  Database model for groups table.
  *
  *  Copyright (c) <2010>, Mikko Aatola
  *
@@ -18,7 +18,7 @@
  */
 
 /**
- *  UserRoles - class
+ *  Groups - class
  *
  *  @package    models
  *  @author     Mikko Aatola
@@ -102,6 +102,31 @@ class Default_Model_Groups extends Zend_Db_Table_Abstract
                 ->limitPage($page, $count);
         return $this->fetchAll($select)->toArray();
     }
+
+    /**
+     * getNames
+     *
+     * Returns an array of all group names in an associative array
+     * with group id as key.
+     *
+     * @author Mikko Aatola
+     */
+    public function getNames()
+    {
+        $select = $this->select()
+            ->from($this, array('id_grp', 'group_name_grp'));
+        $result = $this->fetchAll($select);
+        if (!$result)
+            return null;
+
+        $result = $result->toArray();
+        $final = array();
+        foreach ($result as $grp) {
+            $final[$grp['id_grp']] = $grp['group_name_grp'];
+        }
+
+        return $final;
+    }
     
     /**
      * Adds a new group to the db.
@@ -160,6 +185,10 @@ class Default_Model_Groups extends Zend_Db_Table_Abstract
         $cmpModel = new Default_Model_Campaigns();
         foreach ($campaigns as $cmp)
             $cmpModel->removeCampaign($cmp['id_cmp']);
+
+        // Delete group's coordinates.
+        $coordModel = new Default_Model_Coordinates();
+        $coordModel->removeCoordinates('group', $id_grp);
 
         // Delete group weblinks
         $grpWeblinksModel = new Default_Model_GroupWeblinks();

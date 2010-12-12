@@ -1,0 +1,111 @@
+body {
+    background-color: #ffffff;
+    font: 80%/135% Arial,Helvetica,sans-serif;
+}
+
+#map_top {
+    position: absolute;
+    width: 100%;
+    height: 30px;
+    left: 0;
+    top: 0;
+    border-bottom: thin solid #c0c0c0;
+}
+
+#map_top_navi {
+    height: 20px;
+    padding: 5px 0 5px 5px;
+    float: left;
+}
+
+#map_top_navi span a, #map_top_navi span a:visited {
+    padding-left: 3px;
+    padding-right: 3px;
+    color: #003581;
+    text-decoration: none;
+}
+
+#map_top_navi span.red a, #map_top_navi span.red a:visited {
+    color: #D21034;
+}
+
+#map_top_navi span.deepblue a, #map_top_navi span.deepblue a:visited {
+    color: #003581;
+}
+
+#map_top_navi span.green a, #map_top_navi span.green a:visited {
+    color: #4B9B07;
+}
+
+#map_top_navi span.orange a, #map_top_navi span.orange a:visited {
+    color: #FFC726;
+}
+
+#map_top_navi span.blue a, #map_top_navi span.blue a:visited {
+    color: #0089CF;
+}
+
+#map_top_navi span.black a, #map_top_navi span.black a:visited {
+    color: #000000;
+}
+
+#map_top_login {
+    height: 20px;
+    padding: 5px 5px 5px 0;
+    float: right;
+}
+
+#map_controls {
+    position: absolute;
+    width: 100%;
+    height: 100px;
+    left: 0;
+    top: 30px;
+    overflow: auto;
+    border-bottom: thin solid #c0c0c0;
+}
+
+#logo {
+    height: 60px;
+    padding: 12px 0 11px;
+    float: left;
+}
+
+#map_zoom {
+    float: left;
+    padding: 25px 0 25px 25px;
+}
+
+#map_filters {
+    height: 50px;
+    padding: 25px 0 25px 25px;
+    float: left;
+}
+
+.mapfilter {
+    margin-right: 5px;
+    margin-left: 10px;
+}
+
+#search_results {
+    position: absolute;
+    width: 350px;
+    left: 0;
+    top: 130px;
+    bottom: 0;
+    overflow: auto;
+}
+
+#search_results ul {
+    font: 95%/100% Arial,Helvetica,sans-serif;
+    width: 335px;
+}
+
+#map {
+    position: absolute;
+    left: 350px;
+    right: 0;
+    top: 130px;
+    bottom: 0;
+    overflow: auto;
+}

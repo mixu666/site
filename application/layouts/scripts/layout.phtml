@@ -437,6 +437,17 @@ echo $this->doctype();
                 <a href="/blog/">Blog</a>
             </div>            
             <div class="sub_menu_left_space">&nbsp;</div>
+            <div id="map"
+                onmouseout="blurMenu(this.id, 'black', '<?php echo $this->baseUrl();?>')"
+                onmouseover="focusMenu(this.id, 'black', '<?php echo $this->baseUrl();?>');"
+                class="sub_menu_item_black"
+            >
+                <a href="<?php echo $this->url(array('controller' => 'map',
+                                                     'action' => 'index',
+                                                     'language' => $this->language),
+                                                'lang_default', true); ?>">Map</a>
+            </div>
+            <div class="sub_menu_left_space">&nbsp;</div>
 			
 			<!-- RIGHT SIDE OF THE MENU, note that the placement order is reversed -->
 			<div class="sub_menu_right">&nbsp;</div>

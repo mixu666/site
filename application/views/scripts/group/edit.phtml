@@ -4,9 +4,10 @@
 <?php $this->headScript()->captureStart()?>
 // Definitions for input boxes ([0] = minimum, [1] = maximum, [2] = required (1 true/0 false)
 var inputDefinitions = {
-    'groupname': [1,  140, 1],
-    'groupdesc': [1,  320, 1],
-    'groupbody': [1,  4000, 1]
+    'groupname':     [1,  140, 1],
+    'groupdesc':     [1,  320, 1],
+    'groupbody':     [1, 4000, 0],
+    'grouplocation': [0,  140, 0]
 };
 <?php $this->headScript()->captureEnd()?>
 

@@ -1,0 +1,97 @@
+<?php Zend_Layout::getMvcInstance()->setLayout('layout_map'); ?>
+<?php $this->headScript()->prependFile('http://maps.google.com/maps/api/js?sensor=false'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl . '/js/mapfunctions.js'); ?>
+
+<?php
+$url_getMapUsers = $this->url(
+    array(
+        'controller' => 'ajax',
+		'action' => 'getmapusers',
+		'language' => $this->language,
+    ), 'lang_default', true);
+$url_getMapGroups = $this->url(
+    array(
+        'controller' => 'ajax',
+		'action' => 'getmapgroups',
+		'language' => $this->language,
+    ), 'lang_default', true);
+$url_getMapCampaigns = $this->url(
+    array(
+        'controller' => 'ajax',
+		'action' => 'getmapcampaigns',
+		'language' => $this->language,
+    ), 'lang_default', true);
+$url_getMapContents = $this->url(
+    array(
+        'controller' => 'ajax',
+		'action' => 'getmapcontents',
+		'language' => $this->language,
+    ), 'lang_default', true);
+$url_getMapStuff = $this->url(
+    array(
+        'controller' => 'ajax',
+        'action' => 'getmapstuff',
+        'language' => $this->language,
+    ), 'lang_default', true);
+?>
+
+<?php $this->headScript()->captureStart(); ?>
+    var map;
+    var bounds;
+    var users = [];
+    var groups = [];
+    var campaigns = [];
+    var contents = [];
+    var searches = [];
+
+    var baseurl = '<?php echo $this->baseUrl; ?>';
+    var url_getmapusers = '<?php echo $url_getMapUsers; ?>';
+    var url_getmapgroups = '<?php echo $url_getMapGroups; ?>';
+    var url_getmapcampaigns = '<?php echo $url_getMapCampaigns; ?>';
+    var url_getmapcontents = '<?php echo $url_getMapContents; ?>';
+    var url_getmapstuff = '<?php echo $url_getMapStuff; ?>';
+
+    function initialize() {
+        var cntLatLng = new google.maps.LatLng(60.199568, 24.937592);
+        var z = 5;
+
+        var myOptions = {
+            zoom: z,
+            center: cntLatLng,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            navigationControl: true,
+            navigationControlOptions: {
+                style: google.maps.NavigationControlStyle.ZOOM_PAN
+            }
+        };
+        bounds = new google.maps.LatLngBounds(cntLatLng, cntLatLng);
+        map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+
+        $("#search_results").tabs();
+    }
+
+    $(document).ready(function() { initialize(); });
+<?php $this->headScript()->captureEnd(); ?>
+
+<div id="group-page">
+    <div id="profile-meta">
+        <!--
+        <div style="border: 1px solid black; border-bottom: none; padding-bottom: 10px;">
+            <ul>
+                <li><a id="map_showusers" href="javascript:ajaxLoadUsers();">Show users</a></li>
+                <li><a id="map_showcontents" href="javascript:ajaxLoadContents();">Show contents</a></li>
+                <li><a id="map_showgroups" href="javascript:ajaxLoadGroups();">Show groups</a></li>
+                <li><a id="map_showcampaigns" href="javascript:ajaxLoadCampaigns();">Show campaigns</a></li>
+            </ul>
+        </div>
+        -->
+
+        <div id="debugdiv"></div>
+    </div>
+
+    <div id="activity" class="right">
+        <div class="left">
+            <div id="map_canvas" style="position: absolute; width: 100%; top: 0; bottom: 0;"></div>
+        </div>
+    </div>
+</div>

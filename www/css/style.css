@@ -102,6 +102,11 @@ div.sub_menu_item_deepblue a:visited {text-decoration: none; color: #003581;}
 div.sub_menu_item_deepblue a:active {text-decoration: none ; color: #003581;}
 div.sub_menu_item_deepblue a:hover {text-decoration: none; color: #003581;}
 
+div.sub_menu_item_black a:link {text-decoration: none; color: #000000;}
+div.sub_menu_item_black a:visited {text-decoration: none; color: #000000;}
+div.sub_menu_item_black a:active {text-decoration: none ; color: #000000;}
+div.sub_menu_item_black a:hover {text-decoration: none; color: #000000;}
+
 div.user_content_top_menu a:link {text-decoration: none; color: #0089CF;}
 div.user_content_top_menu a:visited {text-decoration: none; color: #0089CF;}
 div.user_content_top_menu a:hover {text-decoration: none; color: #0089CF;}
@@ -427,6 +432,19 @@ div.sub_menu_item_deepblue{
 	padding-right: 3px;
 	padding-top: 10px; 
 	color: #003581;
+}
+
+div.sub_menu_item_black{
+	background-image: url('../images/menu_border_black.png');
+	background-position: bottom left;
+	background-repeat: repeat-x;
+	font-weight: bold;
+	float: left;
+	height: 38px;
+	padding-left: 3px;
+	padding-right: 3px;
+	padding-top: 10px;
+	color: #000000;
 }
 
 #add_content_menu_challenge{
